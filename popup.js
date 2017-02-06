@@ -88,9 +88,35 @@ function getCurrentTabUrl(callback) {
 //   x.send();
 // }
 //
-function renderStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
+function createLink(tab) {
+  //takes a tab object and create a link to switch to current tab
+  // update current tab chrome.tabs.update(window.tabs[i].id, {active: true});
+  b = document.createElement('button')
+  b.id = tab.id
+  t = document.createTextNode(tab.title)
+  b.appendChild(t)
+  if (b.addEventListener)
+    b.addEventListener('click',updateTab) //everything else
+  else if (b.attachEvent)
+    b.attachEvent('onclick',updateTab)  //IE only
+  renderStatus(b) //send id for click handling
 }
+
+function updateTab(e) {
+  id = e.target.id
+  chrome.tabs.update(parseInt(id), {active: true}, function(tab){
+          renderText('yeh')
+  })
+}
+
+function renderText(text) {
+  document.getElementById('render-text').textContent = text
+}
+
+function renderStatus(button) {
+  document.getElementById('status').appendChild(button)
+}
+
 
 // document.addEventListener('DOMContentLoaded', function() {
 //   getCurrentTabUrl(function(url) {
@@ -130,16 +156,14 @@ function getTabs(callback) {
   })
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
   getTabs(function(tabs){
-    arr = []
     for(var tab of tabs) {
       //each tab is an object
-      arr.push(tab.title)
+      createLink(tab)
     }
-    renderStatus(arr.join())
   })
+
 })
 //
 // function getCurrentTab(callback) {

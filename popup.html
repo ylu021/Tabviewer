@@ -8,17 +8,39 @@
   <head>
     <title>Getting Started Extension's Popup</title>
     <style>
-      body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-      }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        /*text-overflow: ellipsis;*/
-        /*overflow: hidden;*/
-        max-width: 800px;
-      }
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+    body {
+      font-family: 'Open Sans', "Lucida Grande", Tahoma, sans-serif;
+      font-size: 100%;
+    }
+    #status {
+      width: 200px;
+      height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      padding: 0;
+    }
+    #status button{
+      font-family: 'Open Sans';
+      font-size: 10pt;
+      flex: 0 1 100%;
+      border: none;
+      background: none;
+      padding: 1.5em 0;
+      width: 100px;
+      height: auto;
+      text-align: left;
+      color: #34495e;
+    }
+
+    #status button:hover {
+      color: #e74c3c;
+      background: #ecf0f1;
+    }
+
+
     </style>
 
     <!--

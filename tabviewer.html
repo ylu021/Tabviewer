@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+  <head>
+    <title>Getting Started Extension's Popup</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+    body {
+      font-family: 'Open Sans', "Lucida Grande", Tahoma, sans-serif;
+      font-size: 100%;
+    }
+    #status {
+      width: 200px;
+      height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      padding: 0;
+    }
+    #status button{
+      font-family: 'Open Sans';
+      font-size: 10pt;
+      flex: 0 1 100%;
+      border: none;
+      background: none;
+      padding: 1.5em 0;
+      width: 100px;
+      height: auto;
+      text-align: left;
+      color: #34495e;
+    }
+
+    #status button:hover {
+      color: #e74c3c;
+      background: #ecf0f1;
+    }
+
+
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
+     -->
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <div id="status">
+    </div>
+    <div id="render-text">
+    </div>
+  </body>
+</html>

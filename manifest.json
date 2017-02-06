@@ -7,8 +7,8 @@
 
   "browser_action": {
     "default_icon": "icon.png",
-    "default_popup": "popup.html",
-    "default_title": "Click here"
+    "default_popup": "tabviewer.html",
+    "default_title": "View tabs"
   },
   "permissions": [
     "activeTab",

@@ -88,33 +88,86 @@ function getCurrentTabUrl(callback) {
 //   x.send();
 // }
 //
-function createLink(tab) {
+function createLink(tab, groupId) {
   //takes a tab object and create a link to switch to current tab
   // update current tab chrome.tabs.update(window.tabs[i].id, {active: true});
   b = document.createElement('button')
+  b.classList.add('btn')
   b.id = tab.id
-  t = document.createTextNode(tab.title)
-  b.appendChild(t)
-  if (b.addEventListener)
-    b.addEventListener('click',updateTab) //everything else
-  else if (b.attachEvent)
-    b.attachEvent('onclick',updateTab)  //IE only
-  renderStatus(b) //send id for click handling
+
+  const text = document.createElement('div')
+  text.className ='tabTitle'
+  text.textContent = tab.title
+  b.appendChild(text)
+
+  if(tab.highlighted) {
+    b.classList.add('highlighted')
+    b.disabled = true
+  }else{
+    const deleteBtn = document.createElement('div')
+    deleteBtn.className = 'delete-btn' 
+    deleteBtn.innerHTML = 'X'
+    deleteBtn.addEventListener('click', deleteTab)
+    b.appendChild(deleteBtn)
+  }
+  b.addEventListener('click',updateTab) //everything else
+  renderStatus(b, groupId) //send id for click handling
 }
 
 function updateTab(e) {
-  id = e.target.id
+  id = e.target.id || e.target.parentNode.id
   chrome.tabs.update(parseInt(id), {active: true}, function(tab){
-          renderText('yeh')
+    console.log('switch to new tab')
   })
 }
 
-function renderText(text) {
-  document.getElementById('render-text').textContent = text
+function deleteTab(e) {
+  e.stopPropagation()
+  const id = e.target.id || e.target.parentNode.id
+  const listItemId = document.querySelector('li.active').id
+  const groupId = sortedGroupKeys[listItemId.split('_')[1]]
+  let title = document.getElementById(id).children[1].textContent
+  if (title.length > 25) {
+    title = title.substring(0, 24) + "..."
+  }
+  const r = confirm(`Are you sure to delete this tab? ${title}`)
+  if(r == true) {
+    chrome.tabs.remove(parseInt(id), function(tab) {
+      document.getElementById(id).remove()
+      groups[groupId].map((tab, idx) => {
+        if (tab.id === parseInt(id)) {
+          groups[groupId].splice(idx, 1)
+        }
+      })
+      if (!groups[groupId].length) {
+        delete groups[groupId]
+        document.getElementById(listItemId).remove()
+        // move to current window
+        document.getElementsByTagName('li')[0].click()
+      }
+    })
+  }
 }
 
-function renderStatus(button) {
-  document.getElementById('status').appendChild(button)
+function renderStatus(button, groupId) {
+  let status
+  if(!document.getElementById('status')) {
+    status = document.createElement('div')
+    status.className = 'status'
+    status.id = 'status'
+  }else {
+    status = document.getElementById('status')
+  }
+  if(button.classList.contains('highlighted')) {
+    status.insertBefore(button, status.firstChild)
+  }else {
+    status.appendChild(button)
+  }
+  const nav = document.getElementsByTagName('nav')[0]
+  if(nav.parentNode.lastChild.id=='status') {
+    nav.parentNode.lastChild.remove()
+  }
+  nav.parentNode.appendChild(status)
 }
 
 
@@ -156,16 +209,93 @@ function getTabs(callback) {
   })
 }
 
+let groups = {}
+let sortedGroupKeys = {};
+function groupTabs(tabs) {
+  const regex = /^(?:https?:)?(?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/igm;
+  tabs.map(tab => {
+    let key
+    if(!tab.favIconUrl) {
+      key = 'others'
+    }else {
+      if (tab.url.indexOf('suspended.html') > -1 && tab.url.indexOf('chrome-extension://') > -1) {
+        const url = new URL(tab.url.split('&uri=')[1])
+        key = url.hostname
+      }else if(tab.url.indexOf('localhost') > -1) {
+        key = 'others'
+      }else {
+        const url = new URL(tab.url)
+        key = url.hostname.split('.')[url.hostname.split('.').length - 2]
+      }
+    }
+    if(key in groups) {
+      groups[key].push(tab)
+    }else {
+      groups[key] = [tab] 
+    }
+  })
+  return groups
+}
+
+function displayNavigation(groups) {
+  const nav = document.createElement('nav')
+  document.getElementById('mainBody').insertBefore(nav, document.getElementById('status'))
+  const navList = document.createElement('ul')
+  nav.appendChild(navList)
+  let highlightedItem 
+  let highlightedDomain
+  Object.keys(groups).map((domain, idx) => {
+    const navItem = document.createElement('li')
+    const highlighted = groups[domain].filter(tab => tab.highlighted).length > 0;
+    sortedGroupKeys[idx] = domain
+    navItem.id = `N_${idx}`
+    navItem.addEventListener('click', collapseGroup)
+    navItem.innerHTML = `<img src='${groups[domain][0].favIconUrl || 'icon.png'}'>`
+    if (highlighted) {
+      highlightedItem = navItem
+      highlightedDomain = domain
+    }else {
+      navList.appendChild(navItem)
+    }
+  })
+  navList.insertBefore(highlightedItem, navList.firstChild)
+  createHighlightTab(highlightedItem, navList, highlightedDomain)
+}
+
+function createHighlightTab(navItem, navList, domain) {
+  navItem.classList.add('active')
+  for (const tab of groups[domain]) {
+    createLink(tab, navItem.id)
+  }
+  const domainElement = document.createElement('div')
+  domainElement.className = 'domain'
+  domainElement.textContent = domain
+  document.getElementById('status').insertBefore(domainElement, document.getElementById('status').firstChild)
+}
+
+function collapseGroup(e) {
+  document.getElementById('status').innerHTML = '';
+  let key = e.target.id || e.target.parentNode.id
+  const groupKey = sortedGroupKeys[key.split('_')[1]]
+  // remove li that has active
+  if (document.querySelector('li.active')) {
+    document.querySelector('li.active').classList.remove('active')
+  }
+  // find the li item
+  document.getElementById(key).classList.add('active')
+  // highlight it
+  createHighlightTab(document.getElementById(key), document.getElementsByTagName('ul')[0], groupKey)
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   getTabs(function(tabs){
-    for(var tab of tabs) {
-      //each tab is an object
-      createLink(tab)
-    }
+    groups = groupTabs(tabs)
+    displayNavigation(groups)
   })
 
 })
-//
+
+// ref
 // function getCurrentTab(callback) {
 //   // Query filter to be passed to chrome.tabs.query - see
 //   // https://developer.chrome.com/extensions/tabs#method-query

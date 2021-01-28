@@ -9,37 +9,111 @@
     <title>Getting Started Extension's Popup</title>
     <style>
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Open Sans', "Lucida Grande", Tahoma, sans-serif;
       font-size: 100%;
-    }
-    #status {
-      width: 200px;
-      height: 500px;
-      overflow-y: auto;
-      display: flex;
-      flex-wrap: wrap;
-      flex-direction: row;
+      margin: 0;
       padding: 0;
     }
-    #status button{
+    .container {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+    img {
+      max-height: 30px;
+      min-width: 30px;
+      object-fit: cover;
+      vertical-align: bottom;
+    }
+    nav {
+      flex: 0 0 20%;
+    }
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      border-top: 1px solid #e6e6e6;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 1em;
+    }
+    li.active {
+      background-color: #67aefb;
+    }
+    .status {
+      width: 280px;
+    }
+    .btn{
       font-family: 'Open Sans';
       font-size: 10pt;
+      display: flex;
       flex: 0 1 100%;
       border: none;
       background: none;
-      padding: 1.5em 0;
-      width: 100px;
       height: auto;
       text-align: left;
+      padding: 0;
       color: #34495e;
+      cursor: pointer;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      min-height: 90px;
+    }
+    .domain {
+      padding: 1em;
+      height: 64px;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      border-bottom: 1px solid #e6e6e6;
+      width: 100%;
     }
 
-    #status button:hover {
-      color: #e74c3c;
+    .btn > * {
+      padding: 2em 5px;
+    }
+
+    .btn:hover {
+      color: #0056b3;
       background: #ecf0f1;
     }
-
+    .favIcon {
+      background-color: #67aefb;
+      border-right: 1px solid #e6e6e6;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 5px;
+      transition: margin-left 1s ease-in-out;
+      margin-left: 0;
+    }
+    .tabTitle {
+      margin-left: 10px;
+      padding: 2em 5px;
+      flex: 0 0 85%;
+    }
+    .highlighted {
+      background: #d2e6fd;
+      color: #0056b3;
+      pointer-events: none;
+    }
+    .delete-btn {
+      width: 30px;
+      font-size: small;
+      transition: font-size .3s linear;
+    }
+    .delete-btn:hover {
+      font-size: larger;
+      font-weight: 600;
+    }
 
     </style>
 
@@ -52,9 +126,7 @@
     <script src="config.js"></script>
   </head>
   <body>
-    <div id="status">
-    </div>
-    <div id="render-text">
+    <div class="container" id="mainBody">
     </div>
   </body>
 </html>

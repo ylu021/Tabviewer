@@ -10,7 +10,7 @@ I hope people can contribute to this simple plugin, to make it better and save s
 
 # Instruction  
 
-For using, download the crx file and install it by dropping it at chrome://extensions. 
+For using, download the crx file https://github.com/ylu021/Tabviewer/releases/tag/1.0 and install it by dropping it at chrome://extensions. 
 
 For developers, clone the repository to edit.  
 

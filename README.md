@@ -15,5 +15,6 @@ For using, download the crx file https://github.com/ylu021/Tabviewer/releases/ta
 For developers, clone the repository to edit.  
 
 2016 Made by Yichen.  
+<img width="390" alt="Screenshot 2025-02-17 at 10 22 58 AM" src="https://github.com/user-attachments/assets/63d2876c-c167-4601-adfa-69ebd77b1840" />
 
  
